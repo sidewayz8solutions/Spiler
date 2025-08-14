@@ -1,31 +1,66 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Navigation from '@/components/layout/Navigation'
-import { useAuth } from '@/hooks/useAuth'
-import { useSupabase } from '@/components/providers/Providers'
-import { 
-  ChartBarIcon, 
-  CurrencyDollarIcon, 
-  PhoneIcon, 
-  UserGroupIcon,
-  TrophyIcon,
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+
+import {
   ArrowTrendingUpIcon,
   ClockIcon,
-  DocumentArrowDownIcon
-} from '@heroicons/react/24/outline'
-import { formatCurrency, formatDate, formatDuration } from '@/lib/utils/formatters'
+  CurrencyDollarIcon,
+  DocumentArrowDownIcon,
+  TrophyIcon,
+} from '@heroicons/react/24/outline';
+
+import Navigation from '../../components/layout/Navigation';
+import { useSupabase } from '../../components/providers/Providers';
+import { useAuth } from '../../hooks/useAuth';
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts'
+  formatCurrency,
+  formatDuration,
+} from '../../lib/utils/formatters';
 
 export default function AnalyticsPage() {
   const { user, organization } = useAuth()
-  const supabase = useSupabase()
+  const supabase = useSupabase() as any
   const [timeRange, setTimeRange] = useState('7d')
   const [loading, setLoading] = useState(true)
-  const [analytics, setAnalytics] = useState({
+  type AnalyticsState = {
+    overview: {
+      totalCalls?: number
+      totalDonations?: number
+      totalRaised?: number
+      avgDonation?: number
+      conversionRate?: number
+      avgCallDuration?: number
+      growthRate?: number
+      dollarsPerCall?: number
+    }
+    dailyStats: Array<{ date: string; amount: number; count: number }>
+    topPerformers: Array<{ name: string; calls: number; donations: number; raised: number }>
+    outcomeDistribution: Array<{ name: string; value: number; color: string }>
+    hourlyPerformance: Array<{ hour: string; calls: number; conversions: number; conversionRate: number }>
+    donorSegments: Array<{ name: string; value: number; color: string }>
+    campaignComparison: Array<{ name: string; raised: number; donations: number }>
+  }
+
+  const [analytics, setAnalytics] = useState<AnalyticsState>({
     overview: {},
     dailyStats: [],
     topPerformers: [],
@@ -141,7 +176,10 @@ export default function AnalyticsPage() {
     }
   }
 
-  async function loadDailyStats(startDate, endDate) {
+  async function loadDailyStats(
+    startDate: Date,
+    endDate: Date
+  ): Promise<{ date: string; amount: number; count: number }[]> {
     const { data } = await supabase
       .from('donations')
       .select('amount, created_at')
@@ -151,8 +189,8 @@ export default function AnalyticsPage() {
       .order('created_at')
 
     // Group by day
-    const dailyMap = {}
-    data?.forEach(donation => {
+    const dailyMap: Record<string, { date: string; amount: number; count: number }> = {}
+    data?.forEach((donation: { amount: number; created_at: string }) => {
       const day = new Date(donation.created_at).toLocaleDateString()
       if (!dailyMap[day]) {
         dailyMap[day] = { date: day, amount: 0, count: 0 }
@@ -195,7 +233,7 @@ export default function AnalyticsPage() {
       }
     })
 
-    return Object.values(performerMap)
+    return (Object.values(performerMap) as Array<{ name: string; calls: number; donations: number; raised: number }>)
       .sort((a, b) => b.raised - a.raised)
       .slice(0, 10)
   }
@@ -225,8 +263,8 @@ export default function AnalyticsPage() {
 
     return Object.entries(outcomeMap).map(([name, value]) => ({
       name: name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      value,
-      color: colors[name] || '#6366f1'
+      value: Number(value),
+      color: String(colors[name] || '#6366f1')
     }))
   }
 
@@ -239,7 +277,8 @@ export default function AnalyticsPage() {
       .lte('started_at', endDate.toISOString())
 
     // Group by hour
-    const hourlyMap = {}
+    type HourlyStat = { hour: number; calls: number; conversions: number }
+    const hourlyMap: Record<number, HourlyStat> = {}
     for (let i = 0; i < 24; i++) {
       hourlyMap[i] = { hour: i, calls: 0, conversions: 0 }
     }
@@ -252,7 +291,7 @@ export default function AnalyticsPage() {
       }
     })
 
-    return Object.values(hourlyMap).map(h => ({
+    return Object.values(hourlyMap).map((h: HourlyStat) => ({
       ...h,
       conversionRate: h.calls > 0 ? (h.conversions / h.calls) * 100 : 0,
       hour: `${h.hour}:00`
@@ -397,7 +436,7 @@ export default function AnalyticsPage() {
           <MetricCard
             title="Total Raised"
             value={formatCurrency(analytics.overview.totalRaised)}
-            change={`${analytics.overview.growthRate > 0 ? '+' : ''}${analytics.overview.growthRate?.toFixed(1)}%`}
+            change={`${(analytics.overview.growthRate ?? 0) > 0 ? '+' : ''}${(analytics.overview.growthRate ?? 0).toFixed(1)}%`}
             icon={CurrencyDollarIcon}
             color="from-green-500 to-emerald-600"
             subtitle={`Avg: ${formatCurrency(analytics.overview.avgDonation)}`}

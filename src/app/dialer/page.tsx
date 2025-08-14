@@ -1,17 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Navigation from '@/components/layout/Navigation'
-import DonorCard from '@/components/dialer/DonorCard'
-import CallControls from '@/components/dialer/CallControls'
-import ScriptDisplay from '@/components/dialer/ScriptDisplay'
-import CallTimer from '@/components/dialer/CallTimer'
-import OutcomeButtons from '@/components/dialer/OutcomeButtons'
-import DonationForm from '@/components/dialer/DonationForm'
-import { useDialer } from '@/hooks/useDialer'
-import { useAuth } from '@/hooks/useAuth'
-import { useRealtimeQueue } from '@/hooks/useRealtime'
-import toast from 'react-hot-toast'
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import toast from 'react-hot-toast';
+
+import CallControls from '../../components/dialer/CallControls';
+import CallTimer from '../../components/dialer/CallTimer';
+import DonationForm from '../../components/dialer/DonationForm';
+import DonorCard from '../../components/dialer/DonorCard';
+import OutcomeButtons from '../../components/dialer/OutcomeButtons';
+import ScriptDisplay from '../../components/dialer/ScriptDisplay';
+import Navigation from '../../components/layout/Navigation';
+import { useAuth } from '../../hooks/useAuth';
+import { useDialer } from '../../hooks/useDialer';
+import { useRealtimeQueue } from '../../hooks/useRealtime';
 
 export default function DialerPage() {
   const { user, organization } = useAuth()

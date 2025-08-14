@@ -1,7 +1,7 @@
 'use client'
 
-import Navigation from '@/components/layout/Navigation'
-import { useDonorStore } from '@/stores/donorStore'
+import Navigation from '../../components/layout/Navigation';
+import { useDonorStore } from '../../stores/donorStore';
 
 export default function DonorsPage() {
   const { donors, getFilteredDonors } = useDonorStore()

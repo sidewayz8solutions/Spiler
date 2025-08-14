@@ -1,8 +1,8 @@
 'use client'
 
-import Navigation from '@/components/layout/Navigation'
-import { useRealtimeQueue } from '@/hooks/useRealtime'
-import { useAuth } from '@/hooks/useAuth'
+import Navigation from '../../components/layout/Navigation';
+import { useAuth } from '../../hooks/useAuth';
+import { useRealtimeQueue } from '../../hooks/useRealtime';
 
 export default function QueuePage() {
   const { organization } = useAuth()

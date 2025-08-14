@@ -1,128 +1,163 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+'use client';
 
-@layer base {
-  :root {
-    --spiler-primary: 99 102 241;
-    --spiler-secondary: 34 211 238;
-    --spiler-dark: 26 26 46;
-    --spiler-darker: 15 15 30;
-    --spiler-success: 16 185 129;
-    --spiler-warning: 245 158 11;
-    --spiler-danger: 239 68 68;
-  }
+import React from 'react';
 
-  * {
-    @apply border-border;
-  }
+import { Button } from '../components/shared/Button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/shared/Card';
+import {
+  LoadingBar,
+  LoadingDots,
+  LoadingSpinner,
+  Skeleton,
+} from '../components/shared/Loading';
+import {
+  CallStatus,
+  StatusIndicator,
+} from '../components/shared/StatusIndicator';
 
-  body {
-    @apply bg-spiler-darker text-white;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-pattern p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Hero Section */}
+        <div className="text-center space-y-6 animate-fade-in">
+          <h1 className="text-6xl font-bold gradient-text">
+            Welcome to Spiler
+          </h1>
+          <p className="text-xl text-spiler-text-muted max-w-2xl mx-auto">
+            State-of-the-art campaign fundraising auto-dialer that uses YOUR phone
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Button variant="primary" size="lg" glow>
+              Start Dialing
+            </Button>
+            <Button variant="secondary" size="lg">
+              View Analytics
+            </Button>
+          </div>
+        </div>
 
-@layer components {
-  .btn {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200 active:scale-95;
-  }
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-in-up">
+          <Card glow>
+            <CardHeader>
+              <CardTitle gradient>Active Calls</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-spiler-success">24</div>
+              <div className="flex items-center mt-2">
+                <StatusIndicator status="online" showLabel />
+              </div>
+            </CardContent>
+          </Card>
 
-  .btn-primary {
-    @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700;
-  }
+          <Card hover>
+            <CardHeader>
+              <CardTitle>Total Donors</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-spiler-text">1,247</div>
+              <div className="text-sm text-spiler-text-muted">+12% this week</div>
+            </CardContent>
+          </Card>
 
-  .btn-secondary {
-    @apply bg-gray-800 text-gray-200 hover:bg-gray-700;
-  }
+          <Card hover>
+            <CardHeader>
+              <CardTitle>Funds Raised</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-spiler-accent">$45,230</div>
+              <div className="text-sm text-spiler-text-muted">+8% this month</div>
+            </CardContent>
+          </Card>
 
-  .btn-success {
-    @apply bg-gradient-to-r from-green-500 to-emerald-600 text-white;
-  }
+          <Card hover>
+            <CardHeader>
+              <CardTitle>Success Rate</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-spiler-warning">68%</div>
+              <LoadingBar progress={68} className="mt-2" />
+            </CardContent>
+          </Card>
+        </div>
 
-  .btn-danger {
-    @apply bg-gradient-to-r from-red-500 to-red-600 text-white;
-  }
+        {/* Demo Components */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Call Status Demo */}
+          <Card glass>
+            <CardHeader>
+              <CardTitle>Call Status Demo</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <CallStatus status="connected" duration="02:34" />
+              <CallStatus status="dialing" />
+              <CallStatus status="on-hold" duration="00:45" />
+            </CardContent>
+          </Card>
 
-  .card {
-    @apply bg-spiler-dark/50 backdrop-blur-lg rounded-xl p-6 border border-indigo-500/10;
-  }
+          {/* Loading States Demo */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Loading States</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-spiler-text">Spinners</h4>
+                <div className="flex space-x-4 items-center">
+                  <LoadingSpinner size="sm" />
+                  <LoadingSpinner size="md" />
+                  <LoadingSpinner size="lg" />
+                </div>
+              </div>
 
-  .input {
-    @apply w-full px-4 py-2 bg-spiler-dark/50 border border-indigo-500/20 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors;
-  }
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-spiler-text">Dots</h4>
+                <LoadingDots />
+              </div>
 
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-spiler-text">Progress Bar</h4>
+                <LoadingBar progress={75} />
+              </div>
 
-  .animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-spiler-text">Skeleton</h4>
+                <Skeleton lines={3} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-@layer utilities {
-  .gradient-border {
-    background: linear-gradient(var(--spiler-dark), var(--spiler-dark)) padding-box,
-                linear-gradient(135deg, rgb(var(--spiler-primary)), rgb(var(--spiler-secondary))) border-box;
-    border: 2px solid transparent;
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent;
-  }
-
-  .glass {
-    @apply bg-white/5 backdrop-blur-md;
-  }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-spiler-darker;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-indigo-500/50 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-indigo-500/70;
-}
-
-/* Loading animation */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
+        {/* Button Showcase */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Button Showcase</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="success">Success</Button>
+              <Button variant="danger">Danger</Button>
+              <Button variant="ghost">Ghost</Button>
+            </div>
+            <div className="mt-6 space-y-4">
+              <Button variant="primary" loading className="w-full">
+                Loading Button
+              </Button>
+              <Button variant="primary" glow className="w-full">
+                Glowing Button
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
-  animation: shimmer 2s infinite;
 }

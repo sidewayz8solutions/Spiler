@@ -36,10 +36,8 @@ const nextConfig = {
     ],
   },
 
-  // Experimental features
-  experimental: {
-    serverActions: true,
-  },
+  // Experimental features (serverActions are now enabled by default)
+  experimental: {},
 
   // Environment variables
   env: {
