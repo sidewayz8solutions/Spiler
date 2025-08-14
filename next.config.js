@@ -1,4 +1,3 @@
-const { withSupabaseAuth } = require('@supabase/auth-helpers-nextjs');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -7,7 +6,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  
+
   // PWA Configuration
   headers: async () => [
     {
@@ -28,7 +27,7 @@ const nextConfig = {
       ],
     },
   ],
-  
+
   // Image optimization
   images: {
     domains: [
@@ -36,16 +35,16 @@ const nextConfig = {
       'avatars.githubusercontent.com',
     ],
   },
-  
+
   // Experimental features
   experimental: {
     serverActions: true,
   },
-  
+
   // Environment variables
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version,
   },
 };
 
-module.exports = withBundleAnalyzer(withSupabaseAuth(nextConfig));
+module.exports = withBundleAnalyzer(nextConfig);
