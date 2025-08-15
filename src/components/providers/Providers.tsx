@@ -1,13 +1,23 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useRouter } from 'next/navigation'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 
 const queryClient = new QueryClient()
 
-export const SupabaseContext = createContext(null)
+export const SupabaseContext = createContext<any>(null)
 
 export function Providers({ children }) {
   const [supabase] = useState(() => createClientComponentClient())

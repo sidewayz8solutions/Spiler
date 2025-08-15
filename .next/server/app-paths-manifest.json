@@ -1,0 +1,9 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/dialer/page": "app/dialer/page.js",
+  "/donors/page": "app/donors/page.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/analytics/page": "app/analytics/page.js",
+  "/queue/page": "app/queue/page.js"
+}

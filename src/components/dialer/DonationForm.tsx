@@ -15,7 +15,7 @@ export default function DonationForm({ donor, onSubmit, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       return
     }
 

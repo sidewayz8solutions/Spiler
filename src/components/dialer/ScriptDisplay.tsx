@@ -1,11 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { generateScript } from '@/lib/ai/scriptGenerator'
-import { SparklesIcon } from '@heroicons/react/24/outline'
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import { generateScript } from '@/lib/ai/scriptGenerator';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 
 export default function ScriptDisplay({ donor }) {
-  const [script, setScript] = useState(null)
+  const [script, setScript] = useState<any>(null)
   const [activeSection, setActiveSection] = useState('opening')
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function ScriptDisplay({ donor }) {
                   <div key={objection}>
                     <p className="text-sm text-red-400 mb-1">"{objection}"</p>
                     <p className="text-sm pl-4 border-l-2 border-indigo-500">
-                      {response}
+                      {response as string}
                     </p>
                   </div>
                 ))}

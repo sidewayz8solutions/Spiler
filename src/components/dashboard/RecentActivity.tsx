@@ -1,12 +1,57 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useSupabase } from '@/components/providers/Providers'
-import { formatDistanceToNow } from 'date-fns'
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-export default function RecentActivity({ organizationId }) {
-  const supabase = useSupabase()
-  const [activities, setActivities] = useState([])
+import { formatDistanceToNow } from 'date-fns';
+
+import { useSupabase } from '@/components/providers/Providers';
+
+// Type definitions
+interface CallRecord {
+  id: string
+  organization_id: string
+  donor_id: string
+  team_member_id: string
+  phone_number: string
+  status: string
+  started_at: string
+  created_at: string
+  [key: string]: any
+}
+
+interface DonationRecord {
+  id: string
+  organization_id: string
+  donor_id: string
+  amount: number
+  created_at: string
+  [key: string]: any
+}
+
+interface Activity {
+  type: 'call' | 'donation'
+  message: string
+  time?: string
+  created_at?: string
+  [key: string]: any
+}
+
+interface RealtimePayload {
+  new: CallRecord | DonationRecord
+  old?: CallRecord | DonationRecord
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE'
+}
+
+interface RecentActivityProps {
+  organizationId: string
+}
+
+export default function RecentActivity({ organizationId }: RecentActivityProps) {
+  const supabase = useSupabase() as any // Type assertion to work around typing issues
+  const [activities, setActivities] = useState<Activity[]>([])
 
   useEffect(() => {
     if (!organizationId) return
@@ -16,26 +61,29 @@ export default function RecentActivity({ organizationId }) {
     // Subscribe to real-time updates
     const channel = supabase
       .channel(`activity-${organizationId}`)
-      .on('postgres_changes', 
+      .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'calls' },
-        (payload) => {
-          setActivities(prev => [{
+        (payload: RealtimePayload) => {
+          const newActivity: Activity = {
+            ...payload.new,
             type: 'call',
             message: 'New call started',
-            time: payload.new.created_at,
-            ...payload.new
-          }, ...prev].slice(0, 10))
+            time: payload.new.created_at
+          }
+          setActivities(prev => [newActivity, ...prev].slice(0, 10))
         }
       )
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'donations' },
-        (payload) => {
-          setActivities(prev => [{
+        (payload: RealtimePayload) => {
+          const donationData = payload.new as DonationRecord
+          const newActivity: Activity = {
+            ...payload.new,
             type: 'donation',
-            message: `Donation received: $${payload.new.amount}`,
-            time: payload.new.created_at,
-            ...payload.new
-          }, ...prev].slice(0, 10))
+            message: `Donation received: $${donationData.amount}`,
+            time: payload.new.created_at
+          }
+          setActivities(prev => [newActivity, ...prev].slice(0, 10))
         }
       )
       .subscribe()
@@ -62,10 +110,10 @@ export default function RecentActivity({ organizationId }) {
       .limit(5)
 
     // Combine and sort
-    const combined = [
-      ...(calls || []).map(c => ({ ...c, type: 'call', message: 'Call completed' })),
-      ...(donations || []).map(d => ({ ...d, type: 'donation', message: `Donation: $${d.amount}` }))
-    ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 10)
+    const combined: Activity[] = [
+      ...(calls || []).map((c: CallRecord): Activity => ({ ...c, type: 'call', message: 'Call completed' })),
+      ...(donations || []).map((d: DonationRecord): Activity => ({ ...d, type: 'donation', message: `Donation: $${d.amount}` }))
+    ].sort((a, b) => new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()).slice(0, 10)
 
     setActivities(combined)
   }
@@ -89,7 +137,7 @@ export default function RecentActivity({ organizationId }) {
               <div className="flex-1">
                 <p className="text-sm">{activity.message}</p>
                 <p className="text-xs text-gray-400">
-                  {formatDistanceToNow(new Date(activity.created_at || activity.time), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(activity.created_at || activity.time || ''), { addSuffix: true })}
                 </p>
               </div>
             </div>
